@@ -6,48 +6,73 @@ function index(req, res) {
   // console.log(req.query);
 
   //ricerca tramite query string con lo slug
-  let filteredPost = posts;
+  let filteredPosts = posts;
 
-  if (req.query.slug) {
-    const slug = req.query.slug.toLowerCase();
-    console.log(slug);
+  const tag = req.query.tag;
 
-    filteredPost = posts.filter((post) => {
-      return post.slug === slug;
+  if (tag) {
+    //filtro il post in base al tag fornito in query string
+    filteredPosts = posts.filter((post) => {
+      console.log(tag);
+
+      // console.log(post.tags);
+      console.log(post.tags.includes('Dolci'));
+
+      return post.tags.includes(tag);
     });
+  } else {
+    filteredPosts = '';
+  }
 
-    // console.log(filteredPost);
+  if (!filteredPosts) {
+    res.status(404);
+
+    // ritorno json del messaggio post non trovato
+    return res.json({
+      error: '404',
+      message: 'Tag not found'
+    });
   }
 
   const limit = req.query.limit;
   if (limit && !isNaN(limit) && limit >= 0) {
-    filteredPost = posts.slice(0, limit);
+    filteredPosts = posts.slice(0, limit);
   }
 
-  res.json(filteredPost);
+  res.json(filteredPosts);
 }
 
 //show func
 function show(req, res) {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id); //parametro dinamico
 
-  const post = posts.find((el) => {
-    return el.id === id;
+  const slug = req.query.slug;
+
+  // console.log(slug);
+
+  let filteredPost = posts.find((post) => {
+    return post.id === id;
   });
+  // console.log(filteredPost);
 
-  //se il post non è presente return 404
-  if (!post) {
-    //cambio status da 200 a 404
+  if (slug) {
+    filteredPost = posts.find((post) => post.slug === slug && post.id === id);
+  }
+  // console.log(filteredPost);
+
+  // se il post non è presente return 404
+  // cambio status da 200 a 404
+  if (!filteredPost) {
     res.status(404);
 
-    //ritorno json del messaggio post non trovato
+    // ritorno json del messaggio post non trovato
     return res.json({
       error: '404',
       message: 'Post not found'
     });
-  } else {
-    res.json(post);
   }
+
+  res.json(filteredPost); //output
 }
 
 //store func
