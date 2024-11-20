@@ -43,14 +43,14 @@ function show(req, res) {
 
 //store func
 function store(req, res) {
-  return res.send('creo un nuovo elemento');
+  res.send('creo un nuovo elemento');
 }
 
 //update func
 function update(req, res) {
   const id = parseInt(req.params.id);
 
-  return res.send(`modifico completamente l'elemento con id ${id}`);
+  res.send(`modifico completamente l'elemento con id ${id}`);
 }
 
 //patch func
@@ -64,7 +64,24 @@ function modify(req, res) {
 function destroy(req, res) {
   const id = parseInt(req.params.id);
 
-  res.send(`elimino l'elemento con id ${id}`);
+  //trovo direttamente l'index del post da eliminare da passare poi come parametro al metodo splice invocato sull'array di post
+  const postIndex = posts.findIndex((post) => post.id === id); //return index del post gia' in formato numerico, se trovato || -1 se non trovato
+
+  if (postIndex === -1) {
+    res.status(404);
+
+    return res.json({
+      error: '404',
+      message: 'Post not found'
+    });
+  }
+
+  posts.splice(postIndex, 1);
+
+  //invio status code 204 per notificare che l'operazione è andata a buon fine
+  res.sendStatus(204);
+
+  console.log(posts);
 }
 
 module.exports = { index, show, store, update, modify, destroy };
