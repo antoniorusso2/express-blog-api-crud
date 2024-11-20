@@ -16,23 +16,20 @@ function index(req, res) {
       return post.slug === slug;
     });
 
-    res.json(filteredPost);
     // console.log(filteredPost);
-  } else {
-    res.json(posts);
   }
+
+  const limit = req.query.limit;
+  if (limit && !isNaN(limit) && limit >= 0) {
+    filteredPost = posts.slice(0, limit);
+  }
+
+  res.json(filteredPost);
 }
 
 //show func
 function show(req, res) {
   const id = parseInt(req.params.id);
-
-  // if (req.query.slug) {
-  //   const slug = req.query.slug.toLowerCase();
-  //   console.log(slug);
-
-  //   filteredPost = posts.filter((post) => post.slug === slug);
-  // }
 
   const post = posts.find((el) => {
     return el.id === id;
