@@ -12,15 +12,27 @@ function index(req, res) {
     const slug = req.query.slug.toLowerCase();
     console.log(slug);
 
-    filteredPost = posts.filter((post) => post.slug === slug);
-  } else {
+    filteredPost = posts.filter((post) => {
+      return post.slug === slug;
+    });
+
     res.json(filteredPost);
+    // console.log(filteredPost);
+  } else {
+    res.json(posts);
   }
 }
 
 //show func
 function show(req, res) {
   const id = parseInt(req.params.id);
+
+  // if (req.query.slug) {
+  //   const slug = req.query.slug.toLowerCase();
+  //   console.log(slug);
+
+  //   filteredPost = posts.filter((post) => post.slug === slug);
+  // }
 
   const post = posts.find((el) => {
     return el.id === id;
