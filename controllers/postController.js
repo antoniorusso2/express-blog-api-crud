@@ -1,9 +1,21 @@
-const express = require('express');
+// const express = require('express');
 const posts = require('../posts.js');
 
 //index func
 function index(req, res) {
-  return res.json(posts);
+  // console.log(req.query);
+
+  //ricerca tramite query string con lo slug
+  let filteredPosts = posts;
+
+  if (req.query.slug) {
+    const slug = req.query.slug.toLowerCase();
+    console.log(slug);
+
+    filteredPosts = posts.filter((post) => post.slug === slug);
+  }
+
+  return res.json(filteredPosts);
 }
 
 //show func

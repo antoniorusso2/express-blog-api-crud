@@ -2,7 +2,7 @@
 const express = require('express');
 
 //import file posts
-const posts = require('../posts.js');
+// const posts = require('../posts.js');
 
 //controller import
 const postsController = require('../controllers/postController.js');
