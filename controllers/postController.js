@@ -6,27 +6,39 @@ function index(req, res) {
   // console.log(req.query);
 
   //ricerca tramite query string con lo slug
-  let filteredPosts = posts;
+  let filteredPost = posts;
 
   if (req.query.slug) {
     const slug = req.query.slug.toLowerCase();
     console.log(slug);
 
-    filteredPosts = posts.filter((post) => post.slug === slug);
+    filteredPost = posts.filter((post) => post.slug === slug);
+  } else {
+    res.json(filteredPost);
   }
-
-  return res.json(filteredPosts);
 }
 
 //show func
 function show(req, res) {
   const id = parseInt(req.params.id);
 
-  const result = posts.find((el) => {
+  const post = posts.find((el) => {
     return el.id === id;
   });
 
-  return res.json(result);
+  //se il post non è presente return 404
+  if (!post) {
+    //cambio status da 200 a 404
+    res.status(404);
+
+    //ritorno json del messaggio post non trovato
+    return res.json({
+      error: '404',
+      message: 'Post not found'
+    });
+  } else {
+    res.json(post);
+  }
 }
 
 //store func
