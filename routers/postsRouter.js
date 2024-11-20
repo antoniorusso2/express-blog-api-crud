@@ -10,13 +10,18 @@ const router = express.Router();
 //CRUD
 //INDEX
 router.get('/', (req, res) => {
-  res.send('lista di elementi');
+  res.json(posts);
 });
 
 //SHOW
 router.get('/:id', (req, res) => {
-  const id = req.params.id;
-  res.send(`elemento con id: ${id}`);
+  const id = parseInt(req.params.id);
+
+  const result = posts.find((el) => {
+    return el.id === id;
+  });
+
+  res.json(result);
 });
 
 //STORE
@@ -26,20 +31,22 @@ router.post('/', (req, res) => {
 
 //UPDATE
 router.put('/:id', (req, res) => {
-  const id = req.params.id;
+  const id = parseInt(req.params.id);
 
   res.send(`modifico completamente l'elemento con id ${id}`);
 });
 
 //MODIFY
 router.patch('/:id', (req, res) => {
-  const id = req.params.id;
+  const id = parseInt(req.params.id);
+
   res.send(`modifico parzialmente l'elemento con id ${id}`);
 });
 
 //DESTROY
 router.delete('/:id', (req, res) => {
-  const id = req.params.id;
+  const id = parseInt(req.params.id);
+
   res.send(`elimino l'elemento con id ${id}`);
 });
 

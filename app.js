@@ -4,7 +4,7 @@ const app = express();
 const port = 3000;
 
 //import routers
-const postsRouter = require('./routers/posts.js');
+const postsRouter = require('./routers/postsRouter.js');
 
 app.get('/', (req, res) => {
   res.send('blog server');
