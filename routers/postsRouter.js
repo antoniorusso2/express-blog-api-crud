@@ -4,51 +4,33 @@ const express = require('express');
 //import file posts
 const posts = require('../posts.js');
 
+//controller import
+const postsController = require('../controllers/postController.js');
+
+//destructuring oggetto esportato dal file posts controller
+const { index, show, store, update, modify, destroy } = postsController;
+
 //router
 const router = express.Router();
 
 //CRUD
 //INDEX
-router.get('/', (req, res) => {
-  res.json(posts);
-});
+router.get('/', index);
 
 //SHOW
-router.get('/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-
-  const result = posts.find((el) => {
-    return el.id === id;
-  });
-
-  res.json(result);
-});
+router.get('/:id', show);
 
 //STORE
-router.post('/', (req, res) => {
-  res.send('creo un nuovo elemento');
-});
+router.post('/', store);
 
 //UPDATE
-router.put('/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-
-  res.send(`modifico completamente l'elemento con id ${id}`);
-});
+router.put('/:id', update);
 
 //MODIFY
-router.patch('/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-
-  res.send(`modifico parzialmente l'elemento con id ${id}`);
-});
+router.patch('/:id', modify);
 
 //DESTROY
-router.delete('/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-
-  res.send(`elimino l'elemento con id ${id}`);
-});
+router.delete('/:id', destroy);
 
 //export
 module.exports = router;
