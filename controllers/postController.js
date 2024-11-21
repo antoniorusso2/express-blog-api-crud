@@ -15,6 +15,10 @@ function validate(req) {
   return errors;
 }
 
+function queryFormat(query) {
+  const formattedQuery = []; //array con elementi da formattare e non per eliminare '-' e sostituirlo con uno spazio vuoto
+}
+
 function arrayIncludesArray(array1, array2) {
   return array2.every((el) => array1.includes(el));
 }
@@ -29,25 +33,25 @@ function index(req, res) {
   //ricerca tramite query string con lo slug
   let filteredPosts = posts;
 
-  // const queryTags = req.query.tags; //recupero dati dalla query in formato stringa
+  if (req.query.tags) {
+    const queryArray = req.query.tags.split(','); // trasformo i dati da stringa in array separandoli per virgola se presente
 
-  const queryArray = req.query.tags.split(','); // trasformo i dati da stringa in array separandoli per virgola se presente
+    const formattedQuery = []; //array con elementi da formattare e non per eliminare '-' e sostituirlo con uno spazio vuoto
 
-  const formattedQuery = []; //array con elementi da formattare e non per eliminare '-' e sostituirlo con uno spazio vuoto
+    //formattazione con spazi invece dei trattini
+    queryArray.forEach((tag) => {
+      tag = tag.replaceAll('-', ' ');
+      formattedQuery.push(tag);
+    });
 
-  //formattazione con spazi invece dei trattini
-  queryArray.forEach((tag) => {
-    tag = tag.replaceAll('-', ' ');
-    formattedQuery.push(tag);
-  });
+    //filtro gli elementi da mostrare
+    filteredPosts = posts.filter((post) => {
+      //per ogni elemento uso il metodo every sull'array della query string
+      return formattedQuery.every((tag) => post.tags.includes(tag)); // il risultato saranno gli array che hanno entrambe le proprieta'
+    });
 
-  //filtro gli elementi da mostrare
-  filteredPosts = posts.filter((post) => {
-    //per ogni elemento uso il metodo every sull'array della query string
-    return formattedQuery.every((tag) => post.tags.includes(tag)); // il risultato saranno gli array che hanno entrambe le proprieta'
-  });
-
-  console.log(formattedQuery);
+    console.log(formattedQuery);
+  }
 
   const limit = req.query.limit;
   if (limit && !isNaN(limit) && limit >= 0) {
