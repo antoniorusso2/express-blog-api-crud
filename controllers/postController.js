@@ -16,11 +16,31 @@ function validate(req) {
 }
 
 function queryFormat(query) {
-  const formattedQuery = []; //array con elementi da formattare e non per eliminare '-' e sostituirlo con uno spazio vuoto
+  const formattedArr = []; //array con elementi da formattare e non per eliminare '-' e sostituirlo con uno spazio vuoto
+  query.forEach((tag) => {
+    tag = tag.replace(tag[0], tag[0].toUpperCase());
+    tag = tag.replaceAll('-', ' ');
+    formattedArr.push(tag);
+  });
+
+  return formattedArr;
+
+  //TODO: cambiare anche il resto della stringa in caratteri minuscoli
 }
 
-function arrayIncludesArray(array1, array2) {
-  return array2.every((el) => array1.includes(el));
+/**
+ *
+ * @param {Response} res response per impostare anche il codice di errore nell'head della richiesta
+ * @param {number} errorCode codice errore
+ * @param {string} message messaggio da inviare a chi invia la richiesta
+ * @returns Object
+ */
+function sendError(res, errorCode, message) {
+  res.status(errorCode);
+  return res.json({
+    error: `${errorCode}`,
+    message: message
+  });
 }
 
 // const express = require('express');
@@ -36,13 +56,7 @@ function index(req, res) {
   if (req.query.tags) {
     const queryArray = req.query.tags.split(','); // trasformo i dati da stringa in array separandoli per virgola se presente
 
-    const formattedQuery = []; //array con elementi da formattare e non per eliminare '-' e sostituirlo con uno spazio vuoto
-
-    //formattazione con spazi invece dei trattini
-    queryArray.forEach((tag) => {
-      tag = tag.replaceAll('-', ' ');
-      formattedQuery.push(tag);
-    });
+    const formattedQuery = queryFormat(queryArray); //formattazione query togliendo trattini e rendendo sempre la prima lettera maiuscola
 
     //filtro gli elementi da mostrare
     filteredPosts = posts.filter((post) => {
@@ -82,13 +96,7 @@ function show(req, res) {
   // se il post non è presente return 404
   // cambio status da 200 a 404
   if (!filteredPost) {
-    res.status(404);
-
-    // ritorno json del messaggio post non trovato
-    return res.json({
-      error: '404',
-      message: 'Post not found'
-    });
+    return sendError(res, 404, 'Post not found');
   }
 
   res.json(filteredPost); //output
@@ -96,32 +104,37 @@ function show(req, res) {
 
 //store func
 function store(req, res) {
-  // res.send('creo un nuovo elemento');
+  const newId = posts.length + 1;
 
   const bodyData = req.body;
 
-  const { title, slug, content, image, tags } = bodyData;
-  console.log(bodyData);
-
-  const newId = posts.length + 1;
+  const { title } = bodyData;
 
   const newElement = {
-    id: newId,
-    title,
-    slug,
-    content,
-    image,
-    tags
+    id: newId
   };
+
+  for (let key in bodyData) {
+    if (key !== undefined) {
+      newElement[`${key}`] = key;
+    }
+  }
+  console.log(newElement);
 
   //validazione parametri necessari 'title'
   if (!title || title.length < 1) {
-    res.status(400);
+    // res.status(400);
 
-    res.send({
-      error: '400',
-      message: "L'elemento creato necessita della proprieta 'title'"
-    });
+    // res.send({
+    //   error: '400',
+    //   message: "L'elemento creato necessita della proprieta 'title'"
+    // });
+
+    return sendError(
+      res,
+      400,
+      `L'elemento creato necessita della proprieta 'title'`
+    );
   } else {
     posts.push(newElement);
 
@@ -129,24 +142,12 @@ function store(req, res) {
   }
 
   //log per verifica elemento creato e pushato
-  console.log(posts);
+  // console.log(posts);
 }
 
 //update func - put method
 function update(req, res) {
   const id = parseInt(req.params.id);
-
-  const errors = validate(req);
-  console.log(errors);
-
-  if (errors.length > 0) {
-    res.status(400);
-
-    return res.send({
-      error: '400',
-      message: errors
-    });
-  }
 
   const post = posts.find((post) => {
     return post.id === id;
@@ -154,12 +155,28 @@ function update(req, res) {
 
   //se il post da modificare non esiste allora ritorno errore 404
   if (!post) {
-    res.status(404);
+    // res.status(404);
 
-    return res.send({
-      error: '404',
-      message: 'Elemento da modificare inesistente'
-    });
+    // return res.send({
+    //   error: '404',
+    //   message: 'Elemento da modificare inesistente'
+    // });
+
+    return sendError(res, 404, `Elemento da modificare inesistente`);
+  }
+
+  const errors = validate(req);
+  console.log(errors);
+
+  if (errors.length > 0) {
+    // res.status(400);
+
+    // return res.send({
+    //   error: '400',
+    //   message: errors
+    // });
+
+    return sendError(res, 400, errors);
   }
 
   const bodyData = req.body;
@@ -183,12 +200,13 @@ function modify(req, res) {
   });
 
   if (!post) {
-    res.status(404);
+    // res.status(404);
 
-    return res.send({
-      error: '404',
-      message: 'Elemento da modificare inesistente'
-    });
+    // return res.send({
+    //   error: '404',
+    //   message: 'Elemento da modificare inesistente'
+    // });
+    return sendError(res, 404, 'Elemento da modificare inesistente');
   }
 
   const { title, slug, content, image, tags } = req.body;
@@ -211,12 +229,13 @@ function destroy(req, res) {
   const postIndex = posts.findIndex((post) => post.id === id); //return index del post gia' in formato numerico, se trovato || -1 se non trovato
 
   if (postIndex === -1) {
-    res.status(404);
+    // res.status(404);
 
-    return res.json({
-      error: '404',
-      message: 'Post not found'
-    });
+    // return res.json({
+    //   error: '404',
+    //   message: 'Post not found'
+    // });
+    return sendError(res, 404, 'Post inesistente');
   }
 
   posts.splice(postIndex, 1);
