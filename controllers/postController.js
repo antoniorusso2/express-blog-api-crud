@@ -8,23 +8,18 @@ function index(req, res) {
   //ricerca tramite query string con lo slug
   let filteredPosts = posts;
 
-  const tag = req.query.tag;
+  const tag = req.query.tag; //?? singolo tag, ma con piu' tag non funzionera'
 
   if (tag) {
     //filtro il post in base al tag fornito in query string
     filteredPosts = posts.filter((post) => {
       console.log(tag);
 
-      // console.log(post.tags);
-      console.log(post.tags.includes('Dolci'));
-
       return post.tags.includes(tag);
     });
-  } else {
-    filteredPosts = '';
   }
 
-  if (!filteredPosts) {
+  if (filteredPosts.length === 0) {
     res.status(404);
 
     // ritorno json del messaggio post non trovato
