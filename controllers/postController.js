@@ -158,23 +158,37 @@ function update(req, res) {
   const bodyData = req.body;
   const { title, slug, content, image, tags } = bodyData;
 
-  const modifiedElement = {
-    ...bodyData,
-    title,
-    slug,
-    content,
-    image,
-    tags
-  };
+  post.title = title;
+  post.slug = slug;
+  post.content = content;
+  post.image = image;
+  post.tags = tags;
 
-  res.json(modifiedElement);
+  res.json(post);
 }
 
 //patch func
 function modify(req, res) {
   const id = parseInt(req.params.id);
 
-  return res.send(`modifico parzialmente l'elemento con id ${id}`);
+  const post = posts.find((post) => {
+    return post.id === id;
+  });
+
+  if (!post) {
+    res.status(404);
+
+    return res.send({
+      error: '404',
+      message: 'Elemento da modificare inesistente'
+    });
+  }
+
+  const { title, slug, content, image, tags } = req.body;
+
+  if (title) post.title = title;
+
+  res.send(post);
 }
 
 //destroy func
