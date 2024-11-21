@@ -15,6 +15,10 @@ function validate(req) {
   return errors;
 }
 
+function arrayIncludesArray(array1, array2) {
+  return array2.every((el) => array1.includes(el));
+}
+
 // const express = require('express');
 const posts = require('../posts.js');
 
@@ -25,26 +29,25 @@ function index(req, res) {
   //ricerca tramite query string con lo slug
   let filteredPosts = posts;
 
-  // const tag = req.query.tag; //?? singolo tag, ma con piu' tag non funzionera'
+  // const queryTags = req.query.tags; //recupero dati dalla query in formato stringa
 
-  if (tag) {
-    //filtro il post in base al tag fornito in query string
-    filteredPosts = posts.filter((post) => {
-      console.log(tag);
+  const queryArray = req.query.tags.split(','); // trasformo i dati da stringa in array separandoli per virgola se presente
 
-      return post.tags.includes(tag);
-    });
-  }
+  const formattedQuery = []; //array con elementi da formattare e non per eliminare '-' e sostituirlo con uno spazio vuoto
 
-  if (filteredPosts.length === 0) {
-    res.status(404);
+  //formattazione con spazi invece dei trattini
+  queryArray.forEach((tag) => {
+    tag = tag.replaceAll('-', ' ');
+    formattedQuery.push(tag);
+  });
 
-    // ritorno json del messaggio post non trovato
-    return res.json({
-      error: '404',
-      message: 'Tag not found'
-    });
-  }
+  //filtro gli elementi da mostrare
+  filteredPosts = posts.filter((post) => {
+    //per ogni elemento uso il metodo every sull'array della query string
+    return formattedQuery.every((tag) => post.tags.includes(tag)); // il risultato saranno gli array che hanno entrambe le proprieta'
+  });
+
+  console.log(formattedQuery);
 
   const limit = req.query.limit;
   if (limit && !isNaN(limit) && limit >= 0) {
