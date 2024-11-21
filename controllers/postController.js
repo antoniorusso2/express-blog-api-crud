@@ -8,7 +8,7 @@ function index(req, res) {
   //ricerca tramite query string con lo slug
   let filteredPosts = posts;
 
-  const tag = req.query.tag; //?? singolo tag, ma con piu' tag non funzionera'
+  // const tag = req.query.tag; //?? singolo tag, ma con piu' tag non funzionera'
 
   if (tag) {
     //filtro il post in base al tag fornito in query string
@@ -72,7 +72,40 @@ function show(req, res) {
 
 //store func
 function store(req, res) {
-  res.send('creo un nuovo elemento');
+  // res.send('creo un nuovo elemento');
+
+  const bodyData = req.body;
+
+  const { title, slug, content, image, tags } = bodyData;
+  console.log(bodyData);
+
+  const newId = posts.length + 1;
+
+  const newElement = {
+    id: newId,
+    title,
+    slug,
+    content,
+    image,
+    tags
+  };
+
+  //validazione parametri necessari 'title'
+  if (!title || title.length < 1) {
+    res.status(400);
+
+    res.send({
+      error: '400',
+      message: "L'elemento creato necessita della proprieta 'title'"
+    });
+  } else {
+    posts.push(newElement);
+
+    res.status(201).send('elemento creato con successo');
+  }
+
+  //log per verifica elemento creato e pushato
+  console.log(posts);
 }
 
 //update func

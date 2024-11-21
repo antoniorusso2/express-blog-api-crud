@@ -6,6 +6,9 @@ const port = 3000;
 //import routers
 const postsRouter = require('./routers/postsRouter.js');
 
+//body parser json
+app.use(express.json());
+
 app.get('/', (req, res) => {
   res.send('blog server');
 });
