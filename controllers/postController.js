@@ -1,3 +1,20 @@
+function validate(req) {
+  const { title, slug, content, image, tags } = req.body;
+  const errors = [];
+
+  if (!title) errors.push('Title is required');
+
+  if (!slug) errors.push('Slug is required');
+
+  if (!content) errors.push('Content is required');
+
+  if (!image) errors.push('Image is required');
+
+  if (!tags) errors.push('Tags is required');
+
+  return errors;
+}
+
 // const express = require('express');
 const posts = require('../posts.js');
 
@@ -108,11 +125,49 @@ function store(req, res) {
   console.log(posts);
 }
 
-//update func
+//update func - put method
 function update(req, res) {
   const id = parseInt(req.params.id);
 
-  res.send(`modifico completamente l'elemento con id ${id}`);
+  const errors = validate(req);
+  console.log(errors);
+
+  if (errors.length > 0) {
+    res.status(400);
+
+    return res.send({
+      error: '400',
+      message: errors
+    });
+  }
+
+  const post = posts.find((post) => {
+    return post.id === id;
+  });
+
+  //se il post da modificare non esiste allora ritorno errore 404
+  if (!post) {
+    res.status(404);
+
+    return res.send({
+      error: '404',
+      message: 'Elemento da modificare inesistente'
+    });
+  }
+
+  const bodyData = req.body;
+  const { title, slug, content, image, tags } = bodyData;
+
+  const modifiedElement = {
+    ...bodyData,
+    title,
+    slug,
+    content,
+    image,
+    tags
+  };
+
+  res.json(modifiedElement);
 }
 
 //patch func
