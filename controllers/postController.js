@@ -186,7 +186,12 @@ function modify(req, res) {
 
   const { title, slug, content, image, tags } = req.body;
 
+  //controlla i campi e se sono presenti nella body request(quindi se sono campi da modificare) allora li sovrascrive con quelli presenti nella request
   if (title) post.title = title;
+  if (slug) post.slug = slug;
+  if (content) post.content = content;
+  if (image) post.image = image;
+  if (tags) post.tags = tags;
 
   res.send(post);
 }
