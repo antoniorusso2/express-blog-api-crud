@@ -77,20 +77,26 @@ function index(req, res) {
 
 //show func
 function show(req, res) {
-  const id = parseInt(req.params.id); //parametro dinamico
+  let id = parseInt(req.params.id); //parametro dinamico
 
-  const slug = req.query.slug;
+  if (isNaN(id)) {
+    const slug = req.params.id;
+
+    let filteredPost = posts.find((post) => {
+      return post.slug === slug;
+    });
+
+    res.json(filteredPost); //output
+    return;
+  } else {
+    parseInt(id);
+  }
 
   // console.log(slug);
 
   let filteredPost = posts.find((post) => {
     return post.id === id;
   });
-  // console.log(filteredPost);
-
-  if (slug) {
-    filteredPost = posts.find((post) => post.slug === slug && post.id === id);
-  }
   // console.log(filteredPost);
 
   // se il post non è presente return 404
@@ -110,17 +116,6 @@ function store(req, res) {
 
   const { title } = bodyData;
 
-  const newElement = {
-    id: newId
-  };
-
-  for (let key in bodyData) {
-    if (key !== undefined) {
-      newElement[`${key}`] = key;
-    }
-  }
-  console.log(newElement);
-
   //validazione parametri necessari 'title'
   if (!title || title.length < 1) {
     // res.status(400);
@@ -135,14 +130,25 @@ function store(req, res) {
       400,
       `L'elemento creato necessita della proprieta 'title'`
     );
-  } else {
-    posts.push(newElement);
-
-    res.status(201).send('elemento creato con successo');
   }
+
+  const newElement = {
+    id: newId
+  };
+
+  for (let key in bodyData) {
+    if (key !== undefined) {
+      newElement[`${key}`] = key;
+    }
+  }
+  console.log(newElement);
+
+  posts.push(newElement);
 
   //log per verifica elemento creato e pushato
   // console.log(posts);
+
+  res.status(201).send('elemento creato con successo');
 }
 
 //update func - put method
