@@ -44,6 +44,7 @@ function sendError(res, errorCode, message) {
 }
 
 // const express = require('express');
+
 const posts = require('../posts.js');
 
 //index func
@@ -77,22 +78,20 @@ function index(req, res) {
 
 //show func
 function show(req, res) {
-  let id = parseInt(req.params.id); //parametro dinamico
+  let id = req.params.id; //parametro dinamico
+  // console.log(id);
 
-  if (isNaN(id)) {
-    const slug = req.params.id;
+  // if (isNaN(id)) {
+  //   const slug = req.params.id;
+  //   console.log(slug);
 
-    let filteredPost = posts.find((post) => {
-      return post.slug === slug;
-    });
+  //   let filteredPost = posts.find((post) => {
+  //     return post.slug === slug;
+  //   });
 
-    res.json(filteredPost); //output
-    return;
-  } else {
-    parseInt(id);
-  }
-
-  // console.log(slug);
+  //   res.json(filteredPost); //output
+  //   return;
+  // }
 
   let filteredPost = posts.find((post) => {
     return post.id === id;
@@ -119,12 +118,10 @@ function store(req, res) {
   //validazione parametri necessari 'title'
   if (!title || title.length < 1) {
     // res.status(400);
-
     // res.send({
     //   error: '400',
     //   message: "L'elemento creato necessita della proprieta 'title'"
     // });
-
     return sendError(
       res,
       400,
@@ -153,23 +150,12 @@ function store(req, res) {
 
 //update func - put method
 function update(req, res) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id; //parametro dinamico
+  console.log(id);
 
   const post = posts.find((post) => {
     return post.id === id;
   });
-
-  //se il post da modificare non esiste allora ritorno errore 404
-  if (!post) {
-    // res.status(404);
-
-    // return res.send({
-    //   error: '404',
-    //   message: 'Elemento da modificare inesistente'
-    // });
-
-    return sendError(res, 404, `Elemento da modificare inesistente`);
-  }
 
   const errors = validate(req);
   console.log(errors);
@@ -188,32 +174,28 @@ function update(req, res) {
   const bodyData = req.body;
   const { title, slug, content, image, tags } = bodyData;
 
-  post.title = title;
-  post.slug = slug;
-  post.content = content;
-  post.image = image;
-  post.tags = tags;
+  // post.title = title;
+  // post.slug = slug;
+  // post.content = content;
+  // post.image = image;
+  // post.tags = tags;
+
+  for (let key in bodyData) {
+    if (key !== undefined) {
+      post[`${key}`] = key;
+    }
+  }
 
   res.json(post);
 }
 
 //patch func
 function modify(req, res) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
   const post = posts.find((post) => {
     return post.id === id;
   });
-
-  if (!post) {
-    // res.status(404);
-
-    // return res.send({
-    //   error: '404',
-    //   message: 'Elemento da modificare inesistente'
-    // });
-    return sendError(res, 404, 'Elemento da modificare inesistente');
-  }
 
   const { title, slug, content, image, tags } = req.body;
 
@@ -229,7 +211,7 @@ function modify(req, res) {
 
 //destroy func
 function destroy(req, res) {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
   //trovo direttamente l'index del post da eliminare da passare poi come parametro al metodo splice invocato sull'array di post
   const postIndex = posts.findIndex((post) => post.id === id); //return index del post gia' in formato numerico, se trovato || -1 se non trovato
