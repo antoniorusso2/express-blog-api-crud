@@ -130,13 +130,9 @@ function store(req, res) {
 
   const newElement = {
     id: newId,
+    ...req.body,
   };
 
-  for (let key in bodyData) {
-    if (key !== undefined) {
-      newElement[`${key}`] = key;
-    }
-  }
   console.log(newElement);
 
   posts.push(newElement);
