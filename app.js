@@ -1,5 +1,6 @@
 //express import
 const express = require('express');
+const cors = require('cors');
 //import routers
 const postsRouter = require('./routers/postsRouter.js');
 //middleware orario
@@ -10,6 +11,8 @@ const notFound = require('./middlewares/notFound.js');
 
 const app = express();
 const port = 3000;
+
+app.use(cors());
 
 app.use(checkTime);
 //body parser json
@@ -29,7 +32,7 @@ app.use(errorHandler);
 app.use(notFound);
 
 app.listen(port, () => {
-  console.log(`server listening on port ${port}`);
+  console.log(`cors enabled server listening on port ${port}`);
 });
 
 process.on('SIGINT', () => {
