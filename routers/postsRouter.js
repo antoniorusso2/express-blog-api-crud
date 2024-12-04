@@ -20,7 +20,7 @@ const router = express.Router();
 router.get('/', index);
 
 //SHOW
-router.get('/:id', numerifyId, show);
+router.get('/:id', show);
 
 //STORE
 router.post('/', store);

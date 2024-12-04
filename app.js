@@ -28,8 +28,8 @@ app.use('/posts', postsRouter); //middleware uso prefisso /posts e poi quello im
 app.use(errorHandler);
 app.use(notFound);
 
-app.listen(3000, () => {
-  console.log(`server listening on port ${port} `);
+app.listen(port, () => {
+  console.log(`server listening on port ${port}`);
 });
 
 process.on('SIGINT', () => {

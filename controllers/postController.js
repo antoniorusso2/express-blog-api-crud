@@ -39,10 +39,11 @@ function sendError(res, errorCode, message) {
   res.status(errorCode);
   return res.json({
     error: `${errorCode}`,
-    message: message
+    message: message,
   });
 }
 
+const notFound = require('../middlewares/notFound.js');
 // const express = require('express');
 
 const posts = require('../posts.js');
@@ -78,20 +79,22 @@ function index(req, res) {
 
 //show func
 function show(req, res) {
-  let id = req.params.id; //parametro dinamico
+  const id = parseInt(req.params.id); //parametro dinamico
   // console.log(id);
 
-  // if (isNaN(id)) {
-  //   const slug = req.params.id;
-  //   console.log(slug);
+  console.log(id);
 
-  //   let filteredPost = posts.find((post) => {
-  //     return post.slug === slug;
-  //   });
+  if (isNaN(id)) {
+    const slug = req.params.id;
+    console.log(slug);
 
-  //   res.json(filteredPost); //output
-  //   return;
-  // }
+    let filteredPost = posts.find((post) => {
+      return post.slug === slug;
+    });
+
+    res.json(filteredPost); //output
+    return;
+  }
 
   let filteredPost = posts.find((post) => {
     return post.id === id;
@@ -101,7 +104,7 @@ function show(req, res) {
   // se il post non è presente return 404
   // cambio status da 200 a 404
   if (!filteredPost) {
-    return sendError(res, 404, 'Post not found');
+    return notFound(req, res);
   }
 
   res.json(filteredPost); //output
@@ -122,15 +125,11 @@ function store(req, res) {
     //   error: '400',
     //   message: "L'elemento creato necessita della proprieta 'title'"
     // });
-    return sendError(
-      res,
-      400,
-      `L'elemento creato necessita della proprieta 'title'`
-    );
+    return sendError(res, 400, `L'elemento creato necessita della proprieta 'title'`);
   }
 
   const newElement = {
-    id: newId
+    id: newId,
   };
 
   for (let key in bodyData) {
@@ -218,12 +217,13 @@ function destroy(req, res) {
 
   if (postIndex === -1) {
     // res.status(404);
-
     // return res.json({
     //   error: '404',
     //   message: 'Post not found'
     // });
-    return sendError(res, 404, 'Post inesistente');
+    // return sendError(res, 404, 'Post inesistente');
+    notFound(req, res);
+    return;
   }
 
   posts.splice(postIndex, 1);
