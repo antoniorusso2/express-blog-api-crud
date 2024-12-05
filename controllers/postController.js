@@ -79,26 +79,34 @@ function index(req, res) {
 
 //show func
 function show(req, res) {
-  const id = parseInt(req.params.id); //parametro dinamico
+  const id = req.params.id; //parametro dinamico
   // console.log(id);
 
   console.log(id);
 
-  if (isNaN(id)) {
-    const slug = req.params.id;
-    console.log(slug);
+  // if (isNaN(id)) {
+  //   const slug = req.params.id;
+  //   console.log(slug);
 
-    let filteredPost = posts.find((post) => {
-      return post.slug === slug;
+  //   let filteredPost = posts.find((post) => {
+  //     return post.slug === slug;
+  //   });
+
+  //   res.json(filteredPost); //output
+  //   return;
+  // }
+  let filteredPost;
+
+  if (typeof id === 'string') {
+    filteredPost = posts.find((post) => post.slug === id);
+  } else if (typeof id === 'number') {
+    filteredPost = posts.find((post) => {
+      return post.id === id;
     });
-
-    res.json(filteredPost); //output
-    return;
+  } else {
+    return notFound(req, res);
   }
 
-  let filteredPost = posts.find((post) => {
-    return post.id === id;
-  });
   // console.log(filteredPost);
 
   // se il post non è presente return 404
