@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 //import routers
 const postsRouter = require('./routers/postsRouter.js');
+const categoriesRouter = require('./routers/categoriesRouter.js');
 //middleware orario
 const checkTime = require('./middlewares/checkTime.js');
 
@@ -27,7 +28,9 @@ app.get('/', (req, res) => {
 
 //utilizzo del middleware check time solo per la rotta indicata
 //!app.use('/posts', checkTime, postsRouter);
-app.use('/posts', postsRouter); //middleware uso prefisso /posts e poi quello impostato nei router
+//middleware uso prefisso /posts e poi quello impostato nei router
+app.use('/categories', categoriesRouter);
+app.use('/posts', postsRouter);
 
 app.use(errorHandler);
 app.use(notFound);

@@ -53,11 +53,4 @@ const posts = [
   },
 ];
 
-const categories = [];
-
-posts.forEach((post) => post.tags.forEach((tag) => !categories.includes(tag) && categories.push(tag)));
-
-// console.log(categories);
-
 module.exports = posts;
-module.exports = categories;
