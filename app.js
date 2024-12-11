@@ -15,7 +15,7 @@ const port = 3000;
 app.use(express.static('public'));
 app.use(cors());
 
-app.use(checkTime);
+// app.use(checkTime);
 //body parser json
 app.use(express.json());
 
